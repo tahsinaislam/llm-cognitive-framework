@@ -1,0 +1,63 @@
+models:
+  GPT-4:
+    api_key: ${OPENAI_API_KEY}
+    model_id: gpt-4-turbo-preview
+    temperature: 0.7
+    max_tokens: 1000
+    rate_limit: 10
+  
+  Claude:
+    api_key: ${ANTHROPIC_API_KEY}
+    model_id: claude-3-opus-20240229
+    temperature: 0.7
+    max_tokens: 1000
+    rate_limit: 10
+  
+  Gemini:
+    api_key: ${GOOGLE_API_KEY}
+    model_id: gemini-pro
+    temperature: 0.7
+    max_tokens: 1000
+    rate_limit: 10
+  
+  DeepSeek:
+    api_key: ${DEEPSEEK_API_KEY}
+    model_id: deepseek-chat
+    temperature: 0.7
+    max_tokens: 1000
+    rate_limit: 10
+
+tasks:
+  categories:
+    - working_memory
+    - executive_function
+    - reasoning
+    - integration
+    - meta_cognitive
+  tasks_per_category: 30
+  timeout: 60
+  randomize: true
+
+analysis:
+  batch_size: 10
+  parallel_processing: true
+  cache_responses: true
+  save_raw_responses: true
+
+metrics:
+  calculate_all: true
+  statistical_tests: true
+  confidence_level: 0.95
+
+output:
+  results_dir: results
+  visualizations_dir: visualizations
+  format: json
+  generate_report: true
+  save_individual_profiles: true
+
+logging:
+  level: INFO
+  file: logs/framework.log
+  console: true
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"

@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  cognitive-framework:
+    build: .
+    container_name: llm-cognitive-framework
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+      - DEEPSEEK_API_KEY=${DEEPSEEK_API_KEY}
+    volumes:
+      - ./results:/app/results
+      - ./visualizations:/app/visualizations
+      - ./logs:/app/logs
+      - ./config:/app/config
+    command: python main.py --compare --output results
+    restart: unless-stopped
+
+  web-dashboard:
+    image: nginx:alpine
+    container_name: cognitive-dashboard
+    ports:
+      - "8080:80"
+    volumes:
+      - ./visualizations:/usr/share/nginx/html:ro
+    depends_on:
+      - cognitive-framework
+    restart: unless-stopped
