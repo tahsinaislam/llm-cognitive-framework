@@ -137,7 +137,7 @@ cython_debug/
 
 # Project specific
 *.env
-!.env.example
+!.env
 logs/
 results/
 visualizations/

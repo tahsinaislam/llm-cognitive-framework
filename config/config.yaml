@@ -1,31 +1,87 @@
 models:
-  GPT-4:
-    api_key: ${OPENAI_API_KEY}
-    model_id: gpt-4-turbo-preview
+  # ============ FREE CLOUD MODELS ============
+
+  # Groq - Free tier with rate limits (very fast inference)
+  # Get free API key at: https://console.groq.com
+  Groq-Llama3:
+    provider: groq
+    api_key: ${GROQ_API_KEY}
+    model_id: llama-3.3-70b-versatile
     temperature: 0.7
     max_tokens: 1000
-    rate_limit: 10
-  
-  Claude:
-    api_key: ${ANTHROPIC_API_KEY}
-    model_id: claude-3-opus-20240229
+    rate_limit: 30
+
+  Groq-Llama3-8B:
+    provider: groq
+    api_key: ${GROQ_API_KEY}
+    model_id: llama-3.1-8b-instant
     temperature: 0.7
     max_tokens: 1000
-    rate_limit: 10
-  
+    rate_limit: 30
+
+  # Gemini - Google's free tier (generous limits)
+  # Get free API key at: https://aistudio.google.com/apikey
   Gemini:
+    provider: google
     api_key: ${GOOGLE_API_KEY}
-    model_id: gemini-pro
+    model_id: gemini-2.0-flash-exp
     temperature: 0.7
     max_tokens: 1000
-    rate_limit: 10
-  
-  DeepSeek:
-    api_key: ${DEEPSEEK_API_KEY}
-    model_id: deepseek-chat
+    rate_limit: 15
+
+  # ============ LOCAL MODELS (uncomment for local runs) ============
+  # Note: Ollama models only work when running outside Docker
+  # Install: brew install ollama && ollama pull llama3.2 && ollama serve
+
+  Ollama-Llama3:
+    provider: ollama
+    base_url: http://localhost:11434/v1
+    model_id: llama3.2
     temperature: 0.7
     max_tokens: 1000
-    rate_limit: 10
+    rate_limit: 100
+
+  # Ollama-Mistral:
+  #   provider: ollama
+  #   base_url: http://localhost:11434/v1
+  #   model_id: mistral
+  #   temperature: 0.7
+  #   max_tokens: 1000
+  #   rate_limit: 100
+
+  # Ollama-DeepSeek:
+  #   provider: ollama
+  #   base_url: http://localhost:11434/v1
+  #   model_id: deepseek-r1:8b
+  #   temperature: 0.7
+  #   max_tokens: 1000
+  #   rate_limit: 100
+
+  # ============ PAID MODELS (commented out) ============
+
+  # GPT-4:
+  #   provider: openai
+  #   api_key: ${OPENAI_API_KEY}
+  #   model_id: gpt-4o-mini
+  #   temperature: 0.7
+  #   max_tokens: 1000
+  #   rate_limit: 10
+
+  # Claude:
+  #   provider: anthropic
+  #   api_key: ${ANTHROPIC_API_KEY}
+  #   model_id: claude-3-opus-20240229
+  #   temperature: 0.7
+  #   max_tokens: 1000
+  #   rate_limit: 10
+
+  # DeepSeek:
+  #   provider: deepseek
+  #   api_key: ${DEEPSEEK_API_KEY}
+  #   model_id: deepseek-chat
+  #   temperature: 0.7
+  #   max_tokens: 1000
+  #   rate_limit: 10
 
 tasks:
   categories:
@@ -34,7 +90,7 @@ tasks:
     - reasoning
     - integration
     - meta_cognitive
-  tasks_per_category: 30
+  tasks_per_category: 10  # Reduced for free tier rate limits (was 30)
   timeout: 60
   randomize: true
 

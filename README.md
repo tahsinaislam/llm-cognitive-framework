@@ -1,6 +1,21 @@
 # LLM Cognitive Profiling Framework
 
-A computational framework for characterizing and comparing the cognitive-like information processing patterns of Large Language Models (GPT-4, Claude, Gemini, DeepSeek).
+A computational framework for characterizing and comparing the cognitive-like information processing patterns of Large Language Models.
+
+## Supported Models
+
+### Free Tier (Default)
+| Model | Provider | Description |
+|-------|----------|-------------|
+| **Ollama-Llama3** | Ollama (local) | Llama 3.2 running locally - completely free |
+| **Ollama-Mistral** | Ollama (local) | Mistral running locally - completely free |
+| **Ollama-DeepSeek** | Ollama (local) | DeepSeek-R1 running locally - completely free |
+| **Groq-Llama3** | Groq | Llama 3.3 70B via Groq's free API tier |
+| **Groq-Mixtral** | Groq | Mixtral 8x7B via Groq's free API tier |
+| **Gemini** | Google | Gemini 1.5 Flash via Google's free API tier |
+
+### Paid Options (Optional)
+GPT-4, Claude, and DeepSeek API are also supported but commented out by default.
 
 ## Overview
 
@@ -14,11 +29,12 @@ This framework applies cognitive science principles to systematically evaluate a
 
 ## Features
 
-- 🧠 **Cognitive Assessment Battery**: 150+ carefully designed tasks across 5 cognitive categories
-- 📊 **Automated Analysis**: Pattern recognition and metric calculation
-- 📈 **Visualization Dashboard**: Interactive charts and comparative profiles
-- 🔄 **Multi-Model Support**: Unified interface for GPT-4, Claude, Gemini, and DeepSeek
-- 📝 **Comprehensive Reports**: Detailed cognitive profiles and statistical comparisons
+- Cognitive Assessment Battery: 150+ carefully designed tasks across 5 cognitive categories
+- Automated Analysis: Pattern recognition and metric calculation
+- Visualization Dashboard: Interactive charts and comparative profiles
+- Multi-Model Support: Unified interface for Ollama, Groq, Gemini, and more
+- Research-Ready Reports: Paper-ready markdown and LaTeX table output
+- Free by Default: Uses free APIs and local models out of the box
 
 ## Installation
 
@@ -49,7 +65,7 @@ python -m spacy download en_core_web_sm
 
 4. **Set up API keys**
 ```bash
-cp .env.example .env
+cp .env .env
 # Edit .env and add your API keys
 ```
 
@@ -63,7 +79,7 @@ cd llm-cognitive-framework
 
 2. **Set up API keys**
 ```bash
-cp .env.example .env
+cp .env .env
 # Edit .env and add your API keys
 ```
 
@@ -79,16 +95,18 @@ This will:
 
 ## Usage
 
-### Basic Usage
+### Quick Start (Free Models)
 
-**Run comparative assessment for all models:**
+**Run comparative assessment with Groq models:**
 ```bash
 python main.py --compare
 ```
 
 **Assess a specific model:**
 ```bash
-python main.py --model GPT-4
+python main.py --model Groq-Llama3
+python main.py --model Ollama-Mistral
+python main.py --model Gemini
 ```
 
 **Run specific task category:**
@@ -96,10 +114,30 @@ python main.py --model GPT-4
 python main.py --category working_memory
 ```
 
+### Research Paper Output
+
+**Generate research-ready report (default):**
+```bash
+python main.py --compare --report-format research
+```
+
+**Generate LaTeX tables only:**
+```bash
+python main.py --compare --report-format latex
+```
+
 **Specify output directory:**
 ```bash
 python main.py --compare --output my_results
 ```
+
+### Report Formats
+
+| Format | Description | Output Files |
+|--------|-------------|--------------|
+| `research` | Full paper-ready report with abstract, methodology, results, discussion | `.md` + `.tex` |
+| `latex` | LaTeX tables only for direct paper inclusion | `.tex` |
+| `standard` | Basic markdown summary | `.md` |
 
 ### Advanced Usage
 
@@ -118,22 +156,22 @@ from src.metrics.metric_calculator import MetricCalculator
 
 async def run_custom_assessment():
     # Initialize components
-    model = ModelInterface("GPT-4", config)
+    model = ModelInterface("Groq-Llama3", config)
     task_gen = TaskGenerator(config)
     analyzer = CognitiveAnalyzer()
     calculator = MetricCalculator()
-    
+
     # Generate and run tasks
     tasks = task_gen.generate_tasks("reasoning", count=10)
     responses = []
     for task in tasks:
         response = await model.get_response(task)
         responses.append(response)
-    
+
     # Analyze and calculate metrics
     analysis = analyzer.analyze_responses(responses)
     metrics = calculator.calculate_metrics(analysis)
-    
+
     return metrics
 
 # Run assessment
@@ -152,23 +190,38 @@ Edit `config/config.yaml` to customize:
 
 ## API Keys Setup
 
-The framework requires API keys for each LLM provider:
+### Free Options (Recommended)
 
-1. **OpenAI (GPT-4)**
-   - Get key from: https://platform.openai.com/api-keys
-   - Set: `OPENAI_API_KEY=sk-...`
+1. **Ollama (Local - No API Key Required)**
+   ```bash
+   # Install Ollama
+   brew install ollama  # macOS
+   # or visit https://ollama.ai for other platforms
 
-2. **Anthropic (Claude)**
-   - Get key from: https://console.anthropic.com/
-   - Set: `ANTHROPIC_API_KEY=sk-ant-...`
+   # Download models
+   ollama pull llama3.2
+   ollama pull mistral
+   ollama pull deepseek-r1:8b
 
-3. **Google (Gemini)**
-   - Get key from: https://makersuite.google.com/app/apikey
-   - Set: `GOOGLE_API_KEY=...`
+   # Start the server
+   ollama serve
+   ```
 
-4. **DeepSeek**
-   - Get key from: https://platform.deepseek.com/
-   - Set: `DEEPSEEK_API_KEY=...`
+2. **Groq (Free Tier)**
+   - Get free API key from: https://console.groq.com
+   - Set in `.env`: `GROQ_API_KEY=gsk_...`
+
+3. **Google Gemini (Free Tier)**
+   - Get free API key from: https://aistudio.google.com/apikey
+   - Set in `.env`: `GOOGLE_API_KEY=...`
+
+### Paid Options (Optional)
+
+Uncomment in `config/config.yaml` to enable:
+
+- **OpenAI (GPT-4)**: https://platform.openai.com/api-keys
+- **Anthropic (Claude)**: https://console.anthropic.com/
+- **DeepSeek**: https://platform.deepseek.com/
 
 ## Output Structure
 
@@ -176,149 +229,43 @@ The framework requires API keys for each LLM provider:
 results/
 ├── results_20240315_143022.json      # Raw response data
 ├── metrics_20240315_143022.json      # Calculated metrics
-└── report_20240315_143022.md         # Markdown report
+├── report_20240315_143022.md         # Research paper-ready report
+└── tables_20240315_143022.tex        # LaTeX tables for paper
 
 visualizations/
 ├── cognitive_radar.html              # Interactive radar chart
 ├── metrics_comparison.html           # Bar chart comparison
-├── metrics_heatmap.html             # Heatmap visualization
+├── metrics_heatmap.html              # Heatmap visualization
 └── cognitive_dashboard.html          # Comprehensive dashboard
 ```
 
-## Deployment
+### Research Report Contents
 
-### Cloud Deployment (AWS EC2)
+The `report_*.md` file includes:
+- **Abstract** - Auto-generated summary with key findings
+- **Methodology** - Task battery, metrics definitions, parameters
+- **Results** - Comparative tables with interpretations
+- **Model Profiles** - Detailed per-model breakdown
+- **Statistical Analysis** - Mean, std dev, range, CV
+- **Key Findings** - Bullet-point highlights
+- **Discussion** - Template discussion section
+- **Limitations** - Standard limitations
 
-1. **Launch EC2 instance** (t2.medium or larger recommended)
+### LaTeX Tables
 
-2. **Install Docker and Docker Compose:**
-```bash
-sudo apt-get update
-sudo apt-get install docker.io docker-compose
-sudo usermod -aG docker $USER
-```
-
-3. **Clone and configure:**
-```bash
-git clone https://github.com/yourusername/llm-cognitive-framework.git
-cd llm-cognitive-framework
-nano .env  # Add your API keys
-```
-
-4. **Run with Docker Compose:**
-```bash
-docker-compose up -d
-```
-
-5. **Access dashboard:**
-   - Configure security group to allow port 8080
-   - Access at: http://your-ec2-ip:8080
-
-### Kubernetes Deployment
-
-1. **Create ConfigMap for configuration:**
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: cognitive-framework-config
-data:
-  config.yaml: |
-    # Your configuration here
-```
-
-2. **Create Secret for API keys:**
-```bash
-kubectl create secret generic api-keys \
-  --from-literal=OPENAI_API_KEY=your_key \
-  --from-literal=ANTHROPIC_API_KEY=your_key \
-  --from-literal=GOOGLE_API_KEY=your_key \
-  --from-literal=DEEPSEEK_API_KEY=your_key
-```
-
-3. **Deploy application:**
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: cognitive-framework
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: cognitive-framework
-  template:
-    metadata:
-      labels:
-        app: cognitive-framework
-    spec:
-      containers:
-      - name: framework
-        image: llm-cognitive-framework:latest
-        envFrom:
-        - secretRef:
-            name: api-keys
-        volumeMounts:
-        - name: config
-          mountPath: /app/config
-        - name: results
-          mountPath: /app/results
-      volumes:
-      - name: config
-        configMap:
-          name: cognitive-framework-config
-      - name: results
-        persistentVolumeClaim:
-          claimName: results-pvc
-```
-
-### GitHub Actions CI/CD
-
-Create `.github/workflows/deploy.yml`:
-```yaml
-name: Deploy Framework
-
-on:
-  push:
-    branches: [ main ]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.9'
-    - name: Install dependencies
-      run: |
-        pip install -r requirements.txt
-        python -m spacy download en_core_web_sm
-    - name: Run tests
-      run: pytest tests/
-
-  deploy:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Build and push Docker image
-      env:
-        DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
-      run: |
-        docker build -t $DOCKER_REGISTRY/cognitive-framework:latest .
-        docker push $DOCKER_REGISTRY/cognitive-framework:latest
-    - name: Deploy to server
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
-        script: |
-          cd /opt/cognitive-framework
-          docker-compose pull
-          docker-compose up -d
+The `tables_*.tex` file contains ready-to-use tables:
+```latex
+% Add to preamble: \usepackage{booktabs}
+\begin{table}[htbp]
+\centering
+\caption{Comparative Cognitive Metrics Across LLMs}
+\begin{tabular}{lccccc}
+\toprule
+Model & WMI & EFS & Flexibility & Efficiency & Meta-Cog \\
+\midrule
+...
+\end{tabular}
+\end{table}
 ```
 
 ## Project Structure
@@ -462,7 +409,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 - Georgia Tech CS6795 Cognitive Science course
 - Cognitive science frameworks from Baddeley, Miyake, Kahneman, and others
-- OpenAI, Anthropic, Google, and DeepSeek for API access
+- Ollama, Groq, and Google for free API access
+- Meta (Llama), Mistral AI, and DeepSeek for open-source models
 
 ## Contact
 
@@ -472,7 +420,11 @@ Project Link: https://github.com/yourusername/llm-cognitive-framework
 
 ## Future Work
 
-- [ ] Add support for more LLM providers (Llama, Mistral, etc.)
+- [x] Add support for more LLM providers (Llama, Mistral, DeepSeek-R1)
+- [x] Add research paper-ready report generation
+- [x] Add LaTeX table output for academic papers
+- [x] Support free API tiers (Groq, Gemini)
+- [x] Support local models via Ollama
 - [ ] Implement real-time cognitive load monitoring
 - [ ] Add cross-cultural task adaptations
 - [ ] Develop fine-tuning recommendations based on profiles

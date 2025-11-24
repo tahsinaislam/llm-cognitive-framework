@@ -5,6 +5,7 @@ Handles configuration loading and management
 
 import yaml
 import json
+import re
 from pathlib import Path
 from typing import Dict, Any, Optional
 import os
@@ -12,15 +13,33 @@ from dotenv import load_dotenv
 
 class Config:
     """Configuration manager for the framework"""
-    
+
     def __init__(self, config_path: str = "config/config.yaml"):
         """Initialize configuration from file and environment"""
         load_dotenv()  # Load environment variables from .env file
-        
+
         self.config_path = Path(config_path)
         self.config = self._load_config()
+        self._resolve_env_variables(self.config)
         self._apply_env_overrides()
         self._validate_config()
+
+    def _resolve_env_variables(self, obj: Any) -> Any:
+        """Recursively resolve ${VAR} patterns in config values"""
+        if isinstance(obj, dict):
+            for key, value in obj.items():
+                obj[key] = self._resolve_env_variables(value)
+        elif isinstance(obj, list):
+            for i, item in enumerate(obj):
+                obj[i] = self._resolve_env_variables(item)
+        elif isinstance(obj, str):
+            # Match ${VAR_NAME} pattern
+            pattern = r'\$\{([^}]+)\}'
+            matches = re.findall(pattern, obj)
+            for match in matches:
+                env_value = os.getenv(match, '')
+                obj = obj.replace(f'${{{match}}}', env_value)
+        return obj
     
     def _load_config(self) -> Dict[str, Any]:
         """Load configuration from file"""
@@ -99,16 +118,25 @@ class Config:
         """Apply environment variable overrides"""
         # Override API keys from environment if available
         env_mappings = {
+            'GROQ_API_KEY': ['models', 'Groq-Llama3', 'api_key'],
+            'GROQ_API_KEY': ['models', 'Groq-Mixtral', 'api_key'],
+            'GOOGLE_API_KEY': ['models', 'Gemini', 'api_key'],
             'OPENAI_API_KEY': ['models', 'GPT-4', 'api_key'],
             'ANTHROPIC_API_KEY': ['models', 'Claude', 'api_key'],
-            'GOOGLE_API_KEY': ['models', 'Gemini', 'api_key'],
             'DEEPSEEK_API_KEY': ['models', 'DeepSeek', 'api_key']
         }
-        
+
         for env_var, config_path in env_mappings.items():
             value = os.getenv(env_var)
             if value:
                 self._set_nested(self.config, config_path, value)
+
+        # Handle Groq separately since it's used by multiple models
+        groq_key = os.getenv('GROQ_API_KEY')
+        if groq_key:
+            for model_name in ['Groq-Llama3', 'Groq-Mixtral']:
+                if model_name in self.config.get('models', {}):
+                    self.config['models'][model_name]['api_key'] = groq_key
     
     def _set_nested(self, dictionary: Dict, path: list, value: Any) -> None:
         """Set a value in a nested dictionary using a path"""
