@@ -131,14 +131,6 @@ python main.py --compare --report-format latex
 python main.py --compare --output my_results
 ```
 
-### Report Formats
-
-| Format | Description | Output Files |
-|--------|-------------|--------------|
-| `research` | Full paper-ready report with abstract, methodology, results, discussion | `.md` + `.tex` |
-| `latex` | LaTeX tables only for direct paper inclusion | `.tex` |
-| `standard` | Basic markdown summary | `.md` |
-
 ### Advanced Usage
 
 **Custom configuration:**
@@ -238,18 +230,6 @@ visualizations/
 ├── metrics_heatmap.html              # Heatmap visualization
 └── cognitive_dashboard.html          # Comprehensive dashboard
 ```
-
-### Research Report Contents
-
-The `report_*.md` file includes:
-- **Abstract** - Auto-generated summary with key findings
-- **Methodology** - Task battery, metrics definitions, parameters
-- **Results** - Comparative tables with interpretations
-- **Model Profiles** - Detailed per-model breakdown
-- **Statistical Analysis** - Mean, std dev, range, CV
-- **Key Findings** - Bullet-point highlights
-- **Discussion** - Template discussion section
-- **Limitations** - Standard limitations
 
 ### LaTeX Tables
 
@@ -400,10 +380,6 @@ If you use this framework in your research, please cite:
   url={https://github.com/yourusername/llm-cognitive-framework}
 }
 ```
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Acknowledgments
 
